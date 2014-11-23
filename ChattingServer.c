@@ -78,34 +78,34 @@ int main(int argc, char *argv[]){
 			}  
 			else{  // client_socket에 변화가 감지 되었을 경우
 					
-							while(1){
-									str_len = read(epoll_events[i].data.fd, buf, BUF_SIZE); // buf에 BUF_SIZE만큼 읽어옴
+				while(1){
+						str_len = read(epoll_events[i].data.fd, buf, BUF_SIZE); // buf에 BUF_SIZE만큼 읽어옴
 
-									if(str_len == 0){  // EOF가 전달 되었을 경우
-											epoll_ctl(epollfd, EPOLL_CTL_DEL, epoll_events[i].data.fd, NULL);
-											close(epoll_events[i].data.fd); //epoll인스턴스에서 해당 client_socket을 제거
+						if(str_len == 0){  // EOF가 전달 되었을 경우
+							epoll_ctl(epollfd, EPOLL_CTL_DEL, epoll_events[i].data.fd, NULL);
+							close(epoll_events[i].data.fd); //epoll인스턴스에서 해당 client_socket을 제거
 										
-											for(i = 0 ; i < client_count ; i++){
-												if(epoll_events[i].data.fd == client_socket_list[i]){ 
-													while(i++ < client_count-1)  // client_socket_list에 빈자리가 없도록 하기 위함
-																client_socket_list[i] = client_socket_list[i+1]; 
-													break;
-												}
-											}
+								for(i = 0 ; i < client_count ; i++){
+									if(epoll_events[i].data.fd == client_socket_list[i]){ 
+										while(i++ < client_count-1)  // client_socket_list에 빈자리가 없도록 하기 위함
+											client_socket_list[i] = client_socket_list[i+1]; 
+										break;
+									}
+								}
 										
-											client_count--;  // 클라이언트 하나가 종료되었으므로 갯수를 하나 줄임
-											printf("closed client : %d\n", epoll_events[i].data.fd);
-											break;
-									}
-									else if(str_len < 0){
-										if(errno==EAGAIN) //str_len이 -1이고 errno가 EAGAIN이면 더 이상 읽어올 정보가 없음
-														break;
-									}
-									else{
-										send_msg(buf, str_len);
-									}
-							}
+								client_count--;  // 클라이언트 하나가 종료되었으므로 갯수를 하나 줄임
+								printf("closed client : %d\n", epoll_events[i].data.fd);
+								break;
+						}
+						else if(str_len < 0){
+							if(errno==EAGAIN) //str_len이 -1이고 errno가 EAGAIN이면 더 이상 읽어올 정보가 없음
+								break;
+						}
+						else{
+								send_msg(buf, str_len);
+						}
 				}
+			}
 		}
 	}
 
