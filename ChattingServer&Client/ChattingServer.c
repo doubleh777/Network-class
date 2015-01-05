@@ -118,7 +118,7 @@ int main(int argc, char *argv[]){
 
 void send_msg(char *msg, int length){
 	int i;
-	for(i = 0 ; i < length ; i++)
+	for(i = 0 ; i < client_count ; i++)
 			write(client_socket_list[i], msg, length); 
 }
 
